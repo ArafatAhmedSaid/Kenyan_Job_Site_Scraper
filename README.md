@@ -1,4 +1,6 @@
-# 1. Kenyan_Job_Site_Scraper
+# 1. Project Title
+Kenyan_Job_Site_Scraper
+
 # 2. Problem Statement:
 - Finding recent and relevant job opportunities in Kenya is time-consuming due to the fact that jobs are scattered across many websites. It is therefore inefficient to search for jobs manually via the browsers. This project aims to automate the process of gathering job from a Kenyan website and store them in a structured format for easier search, filtering, and analysis.
 
