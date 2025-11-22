@@ -3,7 +3,6 @@
 import requests                                                                    # For Fetch-ing content from the web.
 from bs4 import BeautifulSoup                                                      # For Parse-ing HTML content.
 import csv                                                                         # For Save-ing data to a CSV file.
-#import pandas as pd                                                               # For read/present-ing data in an Excel-like format.
 
 
 
@@ -11,28 +10,33 @@ import csv                                                                      
 
 base_url = 'https://www.myjobmag.co.ke/search/jobs?field=Aviation+%2F+Airline'     # Source of information i.e. Job Website
 
-response = requests.get(base_url)                                                  # Sends request to website and get response as a HTML page.
-print(f'Status_Code: {response.status_code}')                                      # 200 means request was successful.
-#print(response.content[:100])                                                     # Test = Prints the first 100 characters of the HTML content.
+all_jobs = []                                                                      # Empty list - Stores all jobs.
+
+for page in range(1, 3):                                                           # Loop that Scrapes page 1 and 2 (Until + Without including 3)
+    print(f'Scraping Page: {page}')                                                # Current page being scraped.
+    response = requests.get(base_url + f"&currentpage={page}")                     # Sends request to website and get response as a HTML page.
+    print(f'Status_Code: {response.status_code}')                                  # 200 means request was successful.
+    #print(f'First 100 characters:', response.content[:100])                       # Test = Prints the first 100 characters of the HTML content.
 
 
 
 # STEP 3: PARSE HTML CONTENT
 
-soup = BeautifulSoup(response.content, 'html.parser')                              # Turns messy HTML into Structured Object (soup) that we can easily search through.
-# response.content                                                                 # Raw HTML content returned from the website.
-# 'html.parser'                                                                    # Parser used by BeautifulSoup to process the HTML.
-# BeautifulSoup (...)                                                              # Creates a BeautifulSoup object which represents the entire HTML document.
+    soup = BeautifulSoup(response.content, 'html.parser')                          # Turns messy HTML into Structured Object (soup = parsed HTML) that we can easily search through.
+    # response.content                                                             # Raw HTML content returned from the website.
+    # 'html.parser'                                                                # Parser used by BeautifulSoup to process the HTML.
+    # BeautifulSoup (...)                                                          # Creates a BeautifulSoup object which represents the entire HTML document.
 
 
 
 # STEP 4: INSPECT/EXTRACT DATA
 
-jobs = soup.find_all('li', class_='job-list-li')
-#print(jobs)                                                                       # Tests if the selection/extraction worked.
-#containers = len(jobs)
-#print (containers)
-
+    jobs = soup.find_all('li', class_='job-list-li')                               # Searches soup for all job items: Found in 'li' with class 'job-list-li'
+    #print(jobs)                                                                   # Tests if the selection/extraction worked.
+    #containers = len(jobs)                                                        # Number of job items.
+    #print (containers)
+    for job in jobs:
+        all_jobs.append(job)                                                       # Collects all jobs and add them to the all_jobs list.
 
 
 # STEP 5: SAVE DATA IN A CSV FILE
@@ -41,7 +45,7 @@ with open('Aviation_Jobs.csv', 'w', newline='', encoding='utf-8') as file:      
     writer = csv.writer(file)                                                      # Creates a 'CSV writer object' that lets us write rows to the file
     writer.writerow(["Aviation Jobs in Kenya:"])                                   # Writes the header row of the CSV file i.e. Aviation Jobs in Kenya:
 
-    for job in jobs:
+    for job in all_jobs:
         job_title_tag = job.find('h2')
         job_title = job_title_tag.text.strip() if job_title_tag else 'N/A'
 
